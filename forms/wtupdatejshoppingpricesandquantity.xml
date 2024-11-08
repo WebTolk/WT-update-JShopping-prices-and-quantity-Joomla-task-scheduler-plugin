@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+	<fields name="params">
+		<fieldset name="task_params" description="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_FIELDSET_DESC">
+			<field type="text"
+				   name="folder"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_FOLDER"
+				   description="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_FOLDER_DESC"
+				   hide_default="true"/>
+			<field type="text"
+				   name="filename"
+				   hint="exchange.csv"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_FILENAME"/>
+			<field type="fileinfo"
+				   addfieldprefix="Joomla\Plugin\Task\Wtupdatejshoppingpricesandquantity\Fields"
+				   name="fileinfo"/>
+			<field type="radio"
+				   name="first_row_are_headers"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_FIRST_ROW_ARE_HEADERS"
+				   class="btn-group btn-group-yesno"
+				   default="0"
+				   filter="boolean">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field type="text"
+				   name="columns_delimiter"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_COLUMNS_DELIMITER"
+				   default=";"
+				   filter="string"/>
+
+			<field type="list"
+				   name="identifier_field_name"
+				   label="Определяем товар по "
+				   default="product_ean"
+				   filter="string">
+				<option value="product_ean">PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_IDENTIFIER_FIELD_NAME_PRODUCT_EAN</option>
+				<option value="manufacturer_code">PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_IDENTIFIER_FIELD_NAME_MANUFACTURER_CODE</option>
+				<option value="real_ean">PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_IDENTIFIER_FIELD_NAME_REAL_EAN</option>
+			</field>
+			<field type="radio"
+				   name="update_prices"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_UPDATE_PRICES"
+				   class="btn-group btn-group-yesno"
+				   default="0"
+				   filter="boolean">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field type="radio"
+				   name="update_quantity"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_UPDATE_QUANTITY"
+				   description="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_UPDATE_QUANTITY_DESC"
+				   class="btn-group btn-group-yesno"
+				   default="0"
+				   filter="boolean">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+
+			<field type="radio"
+				   name="update_product_attributes"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_UPDATE_PRODUCT_ATTRIBUTES"
+				   class="btn-group btn-group-yesno"
+				   default="0"
+				   filter="boolean">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>

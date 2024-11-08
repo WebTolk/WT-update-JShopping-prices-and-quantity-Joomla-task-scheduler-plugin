@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="task" method="upgrade">
+	<name>PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY</name>
+	<author>Sergey Tolkachyov</author>
+	<creationDate>05.11.2024</creationDate>
+	<copyright>Sergey Tolkachyov</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>info@web-tolk.ru</authorEmail>
+	<authorUrl>https://web-tolk.ru</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_DESC</description>
+	<namespace path="src">Joomla\Plugin\Task\Wtupdatejshoppingpricesandquantity</namespace>
+	<scriptfile>script.php</scriptfile>
+	<files>
+		<folder>forms</folder>
+		<folder>services</folder>
+		<folder plugin="wtupdatejshoppingpricesandquantity">src</folder>
+		<filename>wtupdatejshoppingpricesandquantity.xml</filename>
+	</files>
+	<languages>
+		<language tag="ru-RU">language/ru-RU/plg_task_wtupdatejshoppingpricesandquantity.ini</language>
+		<language tag="ru-RU">language/ru-RU/plg_task_wtupdatejshoppingpricesandquantity.sys.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_wtupdatejshoppingpricesandquantity.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_wtupdatejshoppingpricesandquantity.sys.ini</language>
+	</languages>
+	<config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field addfieldprefix="Joomla\Plugin\Task\Wtupdatejshoppingpricesandquantity\Fields" type="plugininfo" name="plugininfo"/>
+			</fieldset>
+		</fields>
+	</config>
+	<updateservers>
+      <server type="extension" priority="1" name="WT update JShopping prices and quantity updates">https://web-tolk.ru/component/swjprojects/jupdate?element=wtupdatejshoppingpricesandquantity</server>
+	</updateservers>
+	<changelogurl>https://web-tolk.ru/jchangelog?element=wtupdatejshoppingpricesandquantity</changelogurl>
+</extension>
