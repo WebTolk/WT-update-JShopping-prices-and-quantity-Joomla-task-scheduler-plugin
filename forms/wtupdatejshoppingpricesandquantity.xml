@@ -31,7 +31,7 @@
 
 			<field type="list"
 				   name="identifier_field_name"
-				   label="Определяем товар по "
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_IDENTIFIER_FIELD_NAME"
 				   default="product_ean"
 				   filter="string">
 				<option value="product_ean">PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_IDENTIFIER_FIELD_NAME_PRODUCT_EAN</option>
@@ -61,6 +61,16 @@
 			<field type="radio"
 				   name="update_product_attributes"
 				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_UPDATE_PRODUCT_ATTRIBUTES"
+				   class="btn-group btn-group-yesno"
+				   default="0"
+				   filter="boolean">
+				<option value="1">JYES</option>
+				<option value="0">JNO</option>
+			</field>
+			<field type="radio"
+				   name="unpublish_products_not_exists_in_file"
+				   label="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_UNPUBLISH_PRODUCTS_NOT_EXISTS_IN_FILE"
+				   description="PLG_WTUPDATEJSHOPPINGPRICESANDQUANTITY_TASK_PARAMS_UNPUBLISH_PRODUCTS_NOT_EXISTS_IN_FILE_DESC"
 				   class="btn-group btn-group-yesno"
 				   default="0"
 				   filter="boolean">

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package       WT update jshopping prices and quantity
- * @version       1.0.0
+ * @package    Task - WT Update JoomShopping prices and quantity
+ * @version       1.1.0
  * @Author        Sergey Tolkachyov, https://web-tolk.ru
  * @copyright     Copyright (C) 2024 Sergey Tolkachyov
  * @license       GNU/GPL http://www.gnu.org/licenses/gpl-3.0.html
@@ -93,13 +93,13 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
         /** @var int $task_id The task id */
         $task_id = $event->getTaskId();
 
-        $directory_name = trim($params->get('folder')); 
-        $file_name      = trim($params->get('filename')); 
+        $directory_name = trim($params->get('folder'));
+        $file_name      = trim($params->get('filename'));
         $import_path    = implode(DIRECTORY_SEPARATOR, [JPATH_SITE, $directory_name, $file_name]);
         // No directory
         if (!\is_dir(\dirname($import_path)))
         {
-            $message = 'Wrong path to file specified. ' . $import_path . ' is not a valid directory.';
+            $message                  = 'Wrong path to file specified. ' . $import_path . ' is not a valid directory.';
             $this->snapshot['output'] = $message;
             $this->logTask($message, 'error');
 
@@ -108,7 +108,9 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
         // No file
         if (!\is_file($import_path))
         {
-            $message = 'There is no such file: ' . $file_name . ' in ' . \dirname($import_path) . ' directory.';
+            $message                  = 'There is no such file: ' . $file_name . ' in ' . \dirname(
+                    $import_path
+                ) . ' directory.';
             $this->snapshot['output'] = $message;
             $this->logTask(
                 $message,
@@ -126,7 +128,7 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
         {
             if (!\file_exists(JPATH_SITE . '/components/com_jshopping/bootstrap.php'))
             {
-				$message = 'JoomShopping component has not installed.';
+                $message                  = 'JoomShopping component has not installed.';
                 $this->snapshot['output'] = $message;
                 $this->logTask($message, 'error');
 
@@ -137,7 +139,7 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
             $jshopConfig              = \Joomla\Component\Jshopping\Site\Lib\JSFactory::getConfig();
             $jshop_attributes_enabled = $jshopConfig->admin_show_attributes;
 
-            $csv = new \Joomla\Component\Jshopping\Site\Lib\Csv();
+            $csv       = new \Joomla\Component\Jshopping\Site\Lib\Csv();
             $delimiter = \trim($params->get('columns_delimiter', ';'));
             $csv->setDelimit($delimiter);
             $data = $csv->read($import_path);
@@ -149,6 +151,15 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
             /** @var string $field_name JoomShopping product/attrs table column name */
             $field_name = $params->get('identifier_field_name', 'product_ean');
 
+            /**
+             * Снимаем с публикации все товары для того, чтоб на сайте остались только те,
+             * что присутствуют в выгрузке.
+             */
+            if($params->get('unpublish_products_not_exists_in_file', false))
+            {
+                $this->unpublishAllProducts();
+            }
+
             foreach ($data as $product)
             {
                 if (empty($product[0]))
@@ -157,15 +168,15 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
                 }
                 $product = \array_map('trim', $product);
 
-                $this->updateProductData($params, $field_name, $product[0], $product[1], $product[2] );
+                $this->updateProductData($params, $field_name, $product[0], $product[1], $product[2]);
 
                 if ($jshop_attributes_enabled && $params->get('update_product_attributes', false))
                 {
-                    $this->updateProductAttrData($params, $field_name, $product[0], $product[1], $product[2] );
+                    $this->updateProductAttrData($params, $field_name, $product[0], $product[1], $product[2]);
                 }
             }
         }
-        $this->snapshot['output'] = \count($data).' rows in file '.$import_path.' has been processed';
+
         return Status::OK;
     }
 
@@ -189,10 +200,11 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
                               ['ignore_request' => true]
                           );
         $task      = $taskModel->getItem($task_id);
-        if($task->last_execution)
+        if ($task->last_execution)
         {
-            $last_run  = (new Date($task->last_execution))->toUnix();
-        } else {
+            $last_run = (new Date($task->last_execution))->toUnix();
+        } else
+        {
             $last_run = 1;
         }
 
@@ -223,34 +235,26 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
         }
 
         $db          = $this->getDatabase();
-        $query       = $db->getQuery(true);
         $jshopHelper = new \Joomla\Component\Jshopping\Site\Helper\Helper();
-        $data        = [];
+
+        $data = new \stdClass();
         if (!empty($product_price) && $params->get('update_prices', false))
         {
-            $data[] = $db->quoteName('product_price') . ' = ' . $db->quote($jshopHelper::formatEPrice($product_price));
+            $data->product_price = $jshopHelper::formatEPrice($product_price);
         }
 
-        if (!empty($product_quantity)  && $params->get('update_quantity', false))
+        if (!empty($product_quantity) && $params->get('update_quantity', false))
         {
-            $data[] = $db->quoteName('product_quantity') . ' = ' . $db->quote(
-                    $jshopHelper::formatqty($product_quantity)
-                );
+            $data->product_quantity = $jshopHelper::formatqty($product_quantity);
         }
 
-        if (\count($data) > 0)
-        {
-            $conditionals = [
-                $db->quoteName($field) . ' = ' . $db->quote($condition),
-            ];
-
-            $query->update($db->quoteName('#__jshopping_products'))
-                  ->set($data)
-                  ->where($conditionals);
-
-           $result = $db->setQuery($query)->execute();
+        if($params->get('unpublish_products_not_exists_in_file', false)){
+            $data->product_publish = 1;
         }
 
+        $data->$field = $condition;
+
+        $db->updateObject('#__jshopping_products',$data, $field);
         return $result;
     }
 
@@ -280,30 +284,49 @@ final class Wtupdatejshoppingpricesandquantity extends CMSPlugin implements Subs
         $field = ($field == 'product_ean') ? 'ean' : $field;
 
         $db          = $this->getDatabase();
-        $query       = $db->getQuery(true);
         $jshopHelper = new \Joomla\Component\Jshopping\Site\Helper\Helper();
-        $data        = [];
+
+        $data = new \stdClass();
         if (!empty($product_price) && $params->get('update_prices', false))
         {
-            $data[] = $db->quoteName('price') . ' = ' . $db->quote($jshopHelper::formatEPrice($product_price));
+            $data->price = $jshopHelper::formatEPrice($product_price);
         }
 
         if (!empty($product_quantity) && $params->get('update_quantity', false))
         {
-            $data[] = $db->quoteName('count') . ' = ' . $db->quote($jshopHelper::formatqty($product_quantity));
+            $data->count = $jshopHelper::formatqty($product_quantity);
         }
 
-        if (\count($data) > 0)
-        {
-            $conditionals = [
-                $db->quoteName($field) . ' = ' . $db->quote($condition),
-            ];
+        $data->$field = $condition;
 
-            $query->update($db->quoteName('#__jshopping_products_attr'))
-                  ->set($data)
-                  ->where($conditionals);
-            $result = $db->setQuery($query)->execute();
-        }
+        $db->updateObject('#__jshopping_products_attr',$data, $field);
+
         return $result;
+    }
+
+
+    /**
+     * Unpublish all JoomShopping products before update data
+     *
+     * @throws \Exception
+     * @since 1.1.0
+     */
+    private function unpublishAllProducts(): void
+    {
+        $db    = $this->getDatabase();
+        $query = $db->getQuery(true);
+        $query->update('#__jshopping_products')
+              ->set($db->quoteName('product_publish') . ' = ' . $db->quote('0'));
+        try
+        {
+            $db->setQuery($query)->execute();
+        }
+        catch (\Exception $e)
+        {
+            $this->logTask(
+                'There is an error on unpublish all JoomShopping products: ' . $e->getMessage(),
+                $e->getCode()
+            );
+        }
     }
 }
